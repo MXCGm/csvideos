@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>dustⅡ 道具 · 战术面板</title>
 <style>
-/* ========== RESET & FONTS ========== */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+SC:wght@900&family=Share+Tech+Mono&display=swap');
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -20,9 +19,7 @@
   --text-dim: #8a8578;
   --border-subtle: rgba(196,176,140,0.15);
   --border-active: rgba(240,160,80,0.6);
-  --military-green: #5c6b4e;
   --danger-red: #c0392b;
-  --danger-bg: rgba(192,57,43,0.15);
   --font-title: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
   --font-title-cn: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif;
   --font-mono: 'Share Tech Mono', 'Courier New', monospace;
@@ -39,35 +36,389 @@ body{
   -webkit-font-smoothing: antialiased;
 }
 
-/* 背景扫描线 */
 body::before{
   content: '';
   position: fixed;
   top: 0;left: 0;right: 0;height: 2px;
-  background: rgba(240,160,80,0.06);
+  background: rgba(240,160,80,0.08);
   animation: scanline 8s linear infinite;
   pointer-events: none;
   z-index: 9999;
 }
-@keyframes scanline{
-  0%{top:0%}
-  100%{top:100%}
-}
+@keyframes scanline{ 0%{top:0%} 100%{top:100%} }
 
-/* 网格纹理 */
 body::after{
   content: '';
   position: fixed;
   inset: 0;
   background-image: 
-    linear-gradient(rgba(196,176,140,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(196,176,140,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(196,176,140,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196,176,140,0.08) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* ========== LAYOUT ========== */
+.bg-tactical{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* ==================== 投掷物 ==================== */
+.grenade-smoke{
+  position: absolute;
+  left: 2%; top: 8%;
+  width: 170px; height: 240px;
+  opacity: 0.055;
+}
+.grenade-smoke::before{
+  content: ''; position: absolute;
+  left: 24px; top: 48px;
+  width: 122px; height: 156px;
+  border: 2px solid rgba(196,176,140,1);
+  border-radius: 18px 18px 26px 26px;
+  background: rgba(196,176,140,0.05);
+}
+.grenade-smoke::after{
+  content: ''; position: absolute;
+  left: 66px; top: 0;
+  width: 38px; height: 56px;
+  border: 2px solid rgba(196,176,140,1);
+  border-bottom: none;
+  border-radius: 19px 19px 0 0;
+}
+.grenade-smoke .g-line{ position: absolute; left: 26px; width: 118px; height: 1px; background: rgba(196,176,140,1); }
+
+.grenade-flash{
+  position: absolute;
+  right: 6%; top: 14%;
+  width: 130px; height: 240px;
+  opacity: 0.05;
+  transform: rotate(10deg);
+}
+.grenade-flash::before{
+  content: ''; position: absolute;
+  left: 32px; top: 34px;
+  width: 66px; height: 166px;
+  border: 2px solid rgba(240,160,80,1);
+  border-radius: 13px 13px 20px 20px;
+  background: rgba(240,160,80,0.04);
+}
+.grenade-flash::after{
+  content: ''; position: absolute;
+  left: 45px; top: 0;
+  width: 40px; height: 42px;
+  border: 2px solid rgba(240,160,80,1);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.grenade-he{
+  position: absolute;
+  right: 3%; bottom: 6%;
+  width: 200px; height: 200px;
+  opacity: 0.05;
+}
+.grenade-he::before{
+  content: ''; position: absolute;
+  left: 32px; top: 32px;
+  width: 136px; height: 136px;
+  border: 2px solid rgba(240,160,80,1);
+  border-radius: 50%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(240,160,80,0.3) 14px, rgba(240,160,80,0.3) 15px), repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(240,160,80,0.3) 14px, rgba(240,160,80,0.3) 15px);
+}
+.grenade-he::after{
+  content: ''; position: absolute;
+  left: 86px; top: 0;
+  width: 28px; height: 42px;
+  border: 2px solid rgba(240,160,80,1);
+  border-bottom: none;
+  border-radius: 7px 7px 0 0;
+}
+
+.grenade-molly{
+  position: absolute;
+  left: 2%; bottom: 4%;
+  width: 190px; height: 230px;
+  opacity: 0.05;
+  transform: rotate(-12deg);
+}
+.grenade-molly::before{
+  content: ''; position: absolute;
+  left: 42px; top: 42px;
+  width: 106px; height: 140px;
+  border: 2px solid rgba(196,176,140,1);
+  border-radius: 26px 26px 44px 44px;
+  background: rgba(196,176,140,0.04);
+}
+.grenade-molly::after{
+  content: ''; position: absolute;
+  left: 72px; top: 4px;
+  width: 46px; height: 48px;
+  border: 2px solid rgba(196,176,140,1);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+.grenade-molly .m-flame{
+  position: absolute;
+  left: 76px; top: -22px;
+  width: 38px; height: 30px;
+  border: 1.5px solid rgba(240,160,80,1);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* ==================== 地图轮廓 ==================== */
+.map-a-long{
+  position: absolute;
+  left: 10%; top: 22%;
+  width: 220px; height: 50px;
+  border: 1.5px solid rgba(196,176,140,0.14);
+  border-radius: 2px;
+  opacity: 0.7;
+  transform: rotate(-5deg);
+}
+.map-a-site{
+  position: absolute;
+  left: 24%; top: 32%;
+  width: 85px; height: 85px;
+  border: 1.5px solid rgba(196,176,140,0.15);
+  background: rgba(240,160,80,0.03);
+  transform: rotate(3deg);
+}
+.map-a-site::after{
+  content: 'A';
+  position: absolute;
+  top: 50%;left: 50%;
+  transform: translate(-50%,-50%) rotate(-3deg);
+  font-family: var(--font-title);
+  font-size: 28px;
+  color: rgba(240,160,80,0.13);
+}
+.map-a-short{
+  position: absolute;
+  left: 30%; top: 36%;
+  width: 120px; height: 36px;
+  border: 1.5px solid rgba(196,176,140,0.12);
+  transform: rotate(24deg);
+  opacity: 0.6;
+}
+.map-mid{
+  position: absolute;
+  left: 44%; top: 28%;
+  width: 90px; height: 180px;
+  border: 1.5px solid rgba(196,176,140,0.12);
+  border-radius: 4px;
+  opacity: 0.65;
+}
+.map-mid::before{
+  content: '';
+  position: absolute;
+  left: 50%; top: 36%;
+  transform: translate(-50%,-50%);
+  width: 26px; height: 26px;
+  border: 1.5px solid rgba(240,160,80,0.14);
+  border-radius: 50%;
+}
+.map-b-tuns{
+  position: absolute;
+  right: 12%; top: 42%;
+  width: 50px; height: 160px;
+  border: 1.5px solid rgba(196,176,140,0.13);
+  opacity: 0.7;
+}
+.map-b-tuns::before{
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-left: 1px dashed rgba(196,176,140,0.1);
+  border-right: 1px dashed rgba(196,176,140,0.1);
+}
+.map-b-site{
+  position: absolute;
+  right: 8%; bottom: 16%;
+  width: 80px; height: 80px;
+  border: 1.5px solid rgba(196,176,140,0.15);
+  background: rgba(240,160,80,0.025);
+}
+.map-b-site::after{
+  content: 'B';
+  position: absolute;
+  top: 50%;left: 50%;
+  transform: translate(-50%,-50%);
+  font-family: var(--font-title);
+  font-size: 26px;
+  color: rgba(240,160,80,0.13);
+}
+.map-ct-spawn{
+  position: absolute;
+  left: 5%; bottom: 10%;
+  width: 120px; height: 44px;
+  border: 1.5px dashed rgba(196,176,140,0.11);
+  opacity: 0.65;
+}
+.map-t-spawn{
+  position: absolute;
+  right: 4%; bottom: 3%;
+  width: 105px; height: 40px;
+  border: 1.5px dashed rgba(196,176,140,0.11);
+  opacity: 0.65;
+}
+.map-ct-mid{
+  position: absolute;
+  left: 12%; bottom: 22%;
+  width: 170px; height: 34px;
+  border: 1.5px solid rgba(196,176,140,0.09);
+  transform: rotate(3deg);
+  opacity: 0.5;
+}
+
+/* ==================== 战术标记 ==================== */
+.tac-arrow-1{
+  position: absolute;
+  left: 8%; bottom: 14%;
+  width: 180px; height: 1.5px;
+  background: repeating-linear-gradient(90deg, rgba(240,160,80,0.22) 0px, rgba(240,160,80,0.22) 12px, transparent 12px, transparent 20px);
+  transform: rotate(-35deg);
+  transform-origin: left center;
+}
+.tac-arrow-1::after{ content: '▶'; position: absolute; right: -5px; top: -4px; font-size: 9px; color: rgba(240,160,80,0.2); }
+.tac-arrow-2{
+  position: absolute;
+  left: 30%; top: 38%;
+  width: 120px; height: 1.5px;
+  background: repeating-linear-gradient(90deg, rgba(196,176,140,0.18) 0px, rgba(196,176,140,0.18) 10px, transparent 10px, transparent 16px);
+  transform: rotate(5deg);
+  transform-origin: left center;
+}
+.tac-arrow-2::after{ content: '▶'; position: absolute; right: -4px; top: -4px; font-size: 8px; color: rgba(196,176,140,0.18); }
+.tac-arrow-3{
+  position: absolute;
+  right: 14%; bottom: 7%;
+  width: 80px; height: 1.5px;
+  background: repeating-linear-gradient(90deg, rgba(240,160,80,0.18) 0px, rgba(240,160,80,0.18) 10px, transparent 10px, transparent 16px);
+  transform: rotate(-48deg);
+  transform-origin: left center;
+}
+.tac-arrow-3::after{ content: '▶'; position: absolute; right: -4px; top: -4px; font-size: 8px; color: rgba(240,160,80,0.18); }
+.tac-arrow-4{
+  position: absolute;
+  left: 48%; bottom: 22%;
+  width: 160px; height: 1.5px;
+  background: repeating-linear-gradient(90deg, rgba(196,176,140,0.16) 0px, rgba(196,176,140,0.16) 10px, transparent 10px, transparent 16px);
+  transform: rotate(12deg);
+  transform-origin: left center;
+}
+.tac-arrow-4::after{ content: '▶'; position: absolute; right: -4px; top: -4px; font-size: 8px; color: rgba(196,176,140,0.16); }
+
+.tac-circle-1{
+  position: absolute;
+  left: 12%; top: 26%;
+  width: 42px; height: 42px;
+  border: 1.5px dashed rgba(240,160,80,0.18);
+  border-radius: 50%;
+}
+.tac-circle-1::after{ content: '+'; position: absolute; top: 50%;left: 50%; transform: translate(-50%,-50%); font-size: 12px; color: rgba(240,160,80,0.18); }
+.tac-circle-2{
+  position: absolute;
+  left: 44%; top: 42%;
+  width: 36px; height: 36px;
+  border: 1.5px dashed rgba(196,176,140,0.14);
+  border-radius: 50%;
+}
+.tac-circle-2::after{ content: '⊕'; position: absolute; top: 50%;left: 50%; transform: translate(-50%,-50%); font-size: 10px; color: rgba(196,176,140,0.14); }
+.tac-circle-3{
+  position: absolute;
+  right: 10%; bottom: 14%;
+  width: 30px; height: 30px;
+  border: 1.5px dashed rgba(240,160,80,0.14);
+  border-radius: 50%;
+}
+
+.tac-crosshair{
+  position: absolute;
+  left: 46%; top: 30%;
+  width: 20px; height: 20px;
+  opacity: 0.52;
+}
+.tac-crosshair::before, .tac-crosshair::after{
+  content: ''; position: absolute; background: rgba(240,160,80,0.18);
+}
+.tac-crosshair::before{ left: 50%; top: 0; width: 1.5px; height: 100%; transform: translateX(-50%); }
+.tac-crosshair::after{ left: 0; top: 50%; width: 100%; height: 1.5px; transform: translateY(-50%); }
+
+.tac-dist-a{
+  position: absolute;
+  left: 14%; top: 30%;
+  width: 100px; height: 16px;
+  border-top: 1.5px dotted rgba(196,176,140,0.12);
+  transform: rotate(-6deg);
+}
+.tac-dist-a::after{ content: '~120m'; position: absolute; right: -16px; top: -7px; font-family: var(--font-mono); font-size: 7px; color: rgba(196,176,140,0.22); letter-spacing: 1px; }
+.tac-dist-b{
+  position: absolute;
+  right: 12%; bottom: 20%;
+  width: 60px; height: 16px;
+  border-top: 1.5px dotted rgba(196,176,140,0.12);
+}
+.tac-dist-b::after{ content: '~80m'; position: absolute; right: -12px; top: -7px; font-family: var(--font-mono); font-size: 7px; color: rgba(196,176,140,0.22); letter-spacing: 1px; }
+
+.tac-label{
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(196,176,140,0.24);
+  text-transform: uppercase;
+}
+.tac-label.a-long  { left: 11.5%; top: 21%; }
+.tac-label.a-short { left: 32%; top: 34.5%; }
+.tac-label.mid     { left: 45%; top: 27%; }
+.tac-label.b-tuns  { right: 13%; top: 41%; }
+.tac-label.ct      { left: 6%; bottom: 9%; }
+.tac-label.t       { right: 5%; bottom: 2%; }
+
+/* ===== 管理模式标记 ===== */
+.admin-badge{
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+  position: relative;
+  top: -2px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  user-select: none;
+}
+.admin-badge:hover{ opacity: 1; }
+.admin-badge.visible{ display: inline; }
+
+/* ===== 退出管理按钮 ===== */
+.exit-admin-btn{
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 20001;
+  background: rgba(28,26,20,0.85);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+.exit-admin-btn:hover{
+  border-color: var(--tactical-orange);
+  color: var(--tactical-orange);
+}
+.exit-admin-btn.visible{ display: block; }
+
+/* ===== 主界面 ===== */
 .app-container{
   position: relative;
   z-index: 1;
@@ -76,7 +427,6 @@ body::after{
   padding: 28px 32px 40px;
 }
 
-/* ========== HEADER ========== */
 .header{
   display: flex;
   align-items: flex-end;
@@ -84,9 +434,7 @@ body::after{
   margin-bottom: 32px;
   flex-wrap: wrap;
 }
-.title-block{
-  line-height: 0.95;
-}
+.title-block{ line-height: 0.95; }
 .title-label{
   font-family: var(--font-mono);
   font-size: 11px;
@@ -105,12 +453,7 @@ body::after{
   align-items: baseline;
   gap: 12px;
 }
-.title-main .dust2{
-  /* dustⅡ 保持原样 */
-}
-.title-main .dust2 span{
-  color: var(--tactical-orange);
-}
+.title-main .dust2 span{ color: var(--tactical-orange); }
 .title-main .title-cn{
   font-family: var(--font-title-cn);
   font-weight: 900;
@@ -132,7 +475,6 @@ body::after{
   padding: 2px 0 2px 8px;
 }
 
-/* 全局操作按钮 */
 .global-actions{
   margin-left: auto;
   display: flex;
@@ -156,8 +498,9 @@ body::after{
   color: var(--tactical-orange);
   background: var(--tactical-orange-dim);
 }
+.btn-global.admin-only{ display: none; }
+.btn-global.admin-only.visible{ display: inline-block; }
 
-/* ========== 工具栏行 (搜索 + 分类栏) ========== */
 .toolbar-row{
   display: flex;
   align-items: center;
@@ -166,12 +509,7 @@ body::after{
   margin-bottom: 28px;
   flex-wrap: wrap;
 }
-
-/* 搜索框 */
-.search-wrap{
-  position: relative;
-  flex-shrink: 0;
-}
+.search-wrap{ position: relative; flex-shrink: 0; }
 .search-input{
   background: transparent;
   border: 1px solid var(--border-subtle);
@@ -184,10 +522,7 @@ body::after{
   outline: none;
   transition: all 0.25s;
 }
-.search-input::placeholder{
-  color: var(--text-dim);
-  opacity: 0.6;
-}
+.search-input::placeholder{ color: var(--text-dim); opacity: 0.6; }
 .search-input:focus{
   border-color: var(--tactical-orange);
   width: 280px;
@@ -204,9 +539,7 @@ body::after{
   transition: color 0.25s;
 }
 .search-input:focus ~ .search-icon,
-.search-wrap:focus-within .search-icon{
-  color: var(--tactical-orange);
-}
+.search-wrap:focus-within .search-icon{ color: var(--tactical-orange); }
 .search-clear{
   position: absolute;
   right: 8px;
@@ -221,10 +554,9 @@ body::after{
   padding: 2px 4px;
   transition: color 0.2s;
 }
-.search-clear:hover{color: var(--danger-red)}
+.search-clear:hover{color:var(--danger-red)}
 .search-clear.visible{display:block}
 
-/* 分类横向栏 */
 .category-bar-wrap{
   display: flex;
   align-items: center;
@@ -273,8 +605,6 @@ body::after{
   background: var(--tactical-orange);
   border-radius: 50%;
 }
-
-/* 分类标签的操作按钮 */
 .cat-actions-inline{
   display: flex;
   gap: 2px;
@@ -282,10 +612,10 @@ body::after{
   opacity: 0;
   transition: opacity 0.2s;
 }
-.category-tab:hover .cat-actions-inline,
-.category-tab.active .cat-actions-inline{
-  opacity: 1;
-}
+.cat-actions-inline.admin-only{ display: none; }
+.cat-actions-inline.admin-only.visible{ display: flex; }
+.category-tab:hover .cat-actions-inline.visible,
+.category-tab.active .cat-actions-inline.visible{ opacity: 1; }
 .cat-btn-mini{
   width: 20px;height: 20px;
   display: flex;align-items: center;justify-content: center;
@@ -298,16 +628,9 @@ body::after{
   border-radius: 2px;
   transition: all 0.2s;
 }
-.cat-btn-mini:hover{
-  border-color: var(--tactical-orange);
-  color: var(--tactical-orange);
-}
-.cat-btn-mini.danger:hover{
-  border-color: var(--danger-red);
-  color: var(--danger-red);
-}
+.cat-btn-mini:hover{ border-color: var(--tactical-orange); color: var(--tactical-orange); }
+.cat-btn-mini.danger:hover{ border-color: var(--danger-red); color: var(--danger-red); }
 
-/* 添加分类按钮 */
 .category-add{
   padding: 8px 14px;
   background: transparent;
@@ -327,13 +650,11 @@ body::after{
   color: var(--tactical-orange);
   background: var(--tactical-orange-dim);
 }
+.category-add.admin-only{ display: none; }
+.category-add.admin-only.visible{ display: inline-block; }
 
-/* ========== 内容区域 ========== */
-.content-area{
-  min-height: 400px;
-}
+.content-area{ min-height: 400px; }
 
-/* 空状态 */
 .empty-state{
   display: flex;
   flex-direction: column;
@@ -344,18 +665,9 @@ body::after{
   border: 1px dashed var(--border-subtle);
   text-align: center;
 }
-.empty-state .empty-icon{
-  font-size: 48px;
-  margin-bottom: 16px;
-  opacity: 0.4;
-}
-.empty-state p{
-  font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 1px;
-}
+.empty-state .empty-icon{ font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.empty-state p{ font-family: var(--font-mono); font-size: 13px; letter-spacing: 1px; }
 
-/* 搜索结果提示 */
 .search-result-info{
   font-family: var(--font-mono);
   font-size: 11px;
@@ -366,7 +678,6 @@ body::after{
 }
 .search-result-info strong{color: var(--tactical-orange)}
 
-/* 卡片网格 */
 .cards-grid{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
@@ -374,7 +685,6 @@ body::after{
   align-items: start;
 }
 
-/* ========== 单个卡片 ========== */
 .card{
   position: relative;
   aspect-ratio: 1 / 1;
@@ -390,8 +700,6 @@ body::after{
   border-color: var(--tactical-orange);
   box-shadow: inset 0 0 40px rgba(240,160,80,0.05), 0 0 20px rgba(240,160,80,0.08);
 }
-
-/* 卡片角落标记 */
 .card::before{
   content: '';
   position: absolute;
@@ -403,11 +711,8 @@ body::after{
   opacity: 0.6;
   z-index: 2;
 }
-.card:hover::before{
-  border-color: var(--tactical-orange);
-}
+.card:hover::before{ border-color: var(--tactical-orange); }
 
-/* 卡片文字区域 */
 .card-text-area{
   position: relative;
   z-index: 2;
@@ -430,20 +735,13 @@ body::after{
   outline: none;
   min-width: 0;
 }
-.card-text-input::placeholder{
-  color: var(--text-dim);
-  opacity: 0.5;
-}
-.card-text-input:focus{
-  border-bottom: 1px solid var(--tactical-orange);
-}
+.card-text-input::placeholder{ color: var(--text-dim); opacity: 0.5; }
+.card-text-input:focus{ border-bottom: 1px solid var(--tactical-orange); }
+.card-text-input.readonly{ cursor: default; pointer-events: none; }
 
-/* 卡片内操作按钮 */
-.card-btn-row{
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-}
+.card-btn-row{ display: flex; gap: 2px; flex-shrink: 0; }
+.card-btn-row.admin-only{ display: none; }
+.card-btn-row.admin-only.visible{ display: flex; }
 .card-btn{
   width: 22px;height: 22px;
   display: flex;align-items: center;justify-content: center;
@@ -455,16 +753,9 @@ body::after{
   border-radius: 2px;
   transition: all 0.2s;
 }
-.card-btn:hover{
-  border-color: var(--tactical-orange);
-  color: var(--tactical-orange);
-}
-.card-btn.danger:hover{
-  border-color: var(--danger-red);
-  color: var(--danger-red);
-}
+.card-btn:hover{ border-color: var(--tactical-orange); color: var(--tactical-orange); }
+.card-btn.danger:hover{ border-color: var(--danger-red); color: var(--danger-red); }
 
-/* 视频区域 */
 .card-video-area{
   flex: 1;
   position: relative;
@@ -475,8 +766,6 @@ body::after{
   overflow: hidden;
   min-height: 0;
 }
-
-/* 视频元素（动态创建） */
 .card-video-area video{
   position: absolute;
   inset: 0;
@@ -485,8 +774,6 @@ body::after{
   object-fit: contain;
   background: #000;
 }
-
-/* 播放占位 */
 .video-placeholder{
   font-family: var(--font-mono);
   font-size: 11px;
@@ -504,10 +791,7 @@ body::after{
   justify-content: center;
   border: 1px dashed transparent;
 }
-.video-placeholder:hover{
-  color: var(--tactical-orange);
-  border-color: var(--border-subtle);
-}
+.video-placeholder:hover{ color: var(--tactical-orange); border-color: var(--border-subtle); }
 .video-placeholder .play-icon{
   display: block;
   font-size: 40px;
@@ -515,12 +799,8 @@ body::after{
   opacity: 0.35;
   transition: opacity 0.2s, transform 0.2s;
 }
-.video-placeholder:hover .play-icon{
-  opacity: 0.7;
-  transform: scale(1.1);
-}
+.video-placeholder:hover .play-icon{ opacity: 0.7; transform: scale(1.1); }
 
-/* 视频加载中 */
 .video-loading{
   font-family: var(--font-mono);
   font-size: 10px;
@@ -528,12 +808,8 @@ body::after{
   letter-spacing: 1px;
   animation: pulse 1s ease-in-out infinite;
 }
-@keyframes pulse{
-  0%,100%{opacity:0.4}
-  50%{opacity:1}
-}
+@keyframes pulse{ 0%,100%{opacity:0.4} 50%{opacity:1} }
 
-/* ========== MODAL ========== */
 .modal-overlay{
   position: fixed;
   inset: 0;
@@ -544,10 +820,7 @@ body::after{
   justify-content: center;
   animation: fadeIn 0.2s ease-out;
 }
-@keyframes fadeIn{
-  from{opacity:0}
-  to{opacity:1}
-}
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
 .modal-box{
   background: var(--bg-card);
   border: 1px solid var(--border-active);
@@ -585,15 +858,8 @@ body::after{
   outline: none;
   transition: border-color 0.2s;
 }
-.modal-box input:focus{
-  border-color: var(--tactical-orange);
-}
-.modal-actions{
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 4px;
-}
+.modal-box input:focus{ border-color: var(--tactical-orange); }
+.modal-actions{ display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
 .modal-actions button{
   padding: 10px 20px;
   border: 1px solid var(--border-subtle);
@@ -606,18 +872,13 @@ body::after{
   text-transform: uppercase;
   transition: all 0.2s;
 }
-.modal-actions button:hover{
-  border-color: var(--tactical-orange);
-  color: var(--tactical-orange);
-}
+.modal-actions button:hover{ border-color: var(--tactical-orange); color: var(--tactical-orange); }
 .modal-actions button.confirm{
   border-color: var(--tactical-orange);
   background: var(--tactical-orange-dim);
   color: var(--tactical-orange);
 }
-.modal-actions button.confirm:hover{
-  background: rgba(240,160,80,0.25);
-}
+.modal-actions button.confirm:hover{ background: rgba(240,160,80,0.25); }
 .modal-close{
   position: absolute;
   top: 12px;right: 16px;
@@ -630,7 +891,6 @@ body::after{
 }
 .modal-close:hover{color:var(--danger-red)}
 
-/* ========== 通知提示 ========== */
 .toast{
   position: fixed;
   bottom: 24px;
@@ -646,36 +906,67 @@ body::after{
   animation: toastIn 0.3s ease-out, toastOut 0.3s 1.7s ease-in forwards;
   pointer-events: none;
 }
-@keyframes toastIn{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes toastOut{
-  from{opacity:1;transform:translateY(0)}
-  to{opacity:0;transform:translateY(20px)}
-}
+@keyframes toastIn{ from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes toastOut{ from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(20px)} }
 
-/* ========== 响应式 ========== */
 @media(max-width:768px){
   .app-container{padding:16px}
   .title-main{font-size:44px}
   .title-main .title-cn{font-size:24px}
-  .cards-grid{
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
+  .cards-grid{ grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
   :root{--card-size:160px}
   .search-input{width:160px}
   .search-input:focus{width:200px}
+  .grenade-smoke,.grenade-flash,.grenade-he,.grenade-molly{ display: none; }
 }
 </style>
 </head>
 <body>
 
+<div class="bg-tactical" aria-hidden="true">
+  <div class="grenade-smoke">
+    <div class="g-line" style="top:86px;"></div><div class="g-line" style="top:112px;"></div>
+    <div class="g-line" style="top:138px;"></div><div class="g-line" style="top:164px;"></div>
+  </div>
+  <div class="grenade-flash"></div>
+  <div class="grenade-he"></div>
+  <div class="grenade-molly"><div class="m-flame"></div></div>
+  <div class="map-a-long"></div>
+  <div class="map-a-site"></div>
+  <div class="map-a-short"></div>
+  <div class="map-mid"></div>
+  <div class="map-b-tuns"></div>
+  <div class="map-b-site"></div>
+  <div class="map-ct-spawn"></div>
+  <div class="map-t-spawn"></div>
+  <div class="map-ct-mid"></div>
+  <div class="tac-arrow-1"></div>
+  <div class="tac-arrow-2"></div>
+  <div class="tac-arrow-3"></div>
+  <div class="tac-arrow-4"></div>
+  <div class="tac-circle-1"></div>
+  <div class="tac-circle-2"></div>
+  <div class="tac-circle-3"></div>
+  <div class="tac-crosshair"></div>
+  <div class="tac-dist-a"></div>
+  <div class="tac-dist-b"></div>
+  <span class="tac-label a-long">A LONG</span>
+  <span class="tac-label a-short">A SHORT</span>
+  <span class="tac-label mid">MID DOORS</span>
+  <span class="tac-label b-tuns">B TUNNELS</span>
+  <span class="tac-label ct">CT SPAWN</span>
+  <span class="tac-label t">T SPAWN</span>
+</div>
+
+<button class="exit-admin-btn" id="exitAdminBtn" onclick="exitAdmin()" title="退出管理模式">🔓 退出管理</button>
+
 <div class="app-container">
-  <!-- 头部 -->
   <header class="header">
     <div class="title-block">
-      <div class="title-label">Tactical Equipment</div>
+      <div class="title-label">
+        Tactical Equipment
+        <span class="admin-badge" id="adminBadge" onclick="exitAdmin()" title="退出管理模式">🔓</span>
+      </div>
       <div class="title-main">
         <span class="dust2">dust<span>Ⅱ</span></span>
         <span class="title-cn">道具</span>
@@ -683,41 +974,37 @@ body::after{
       <div class="title-coords">POS: A_LONG · CAT · B_TUNNELS</div>
     </div>
     <div class="global-actions">
-      <button class="btn-global" onclick="exportData()" title="导出数据">⟳ 导出 JSON</button>
-      <button class="btn-global" onclick="importDataPrompt()" title="导入数据">↓ 导入 JSON</button>
-      <button class="btn-global" onclick="resetAll()" title="重置全部数据">⚠ 重置</button>
+      <button class="btn-global admin-only" onclick="exportData()">导出 JSON</button>
+      <button class="btn-global admin-only" onclick="importDataPrompt()">导入 JSON</button>
+      <button class="btn-global admin-only" onclick="resetAll()">重置</button>
     </div>
   </header>
 
-  <!-- 工具栏行: 搜索 + 分类栏 -->
   <div class="toolbar-row">
-    <div class="category-bar-wrap" id="categoryBar">
-      <!-- JS 动态渲染 -->
-    </div>
+    <div class="category-bar-wrap" id="categoryBar"></div>
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input type="text" class="search-input" id="searchInput" 
-             placeholder="搜索道具..." oninput="onSearch(this.value)">
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索道具..." oninput="onSearch(this.value)">
       <button class="search-clear" id="searchClear" onclick="clearSearch()">×</button>
     </div>
   </div>
 
-  <!-- 内容区 -->
-  <div class="content-area" id="contentArea">
-    <!-- JS 动态渲染 -->
-  </div>
+  <div class="content-area" id="contentArea"></div>
 </div>
 
-<!-- 隐藏的文件导入 input -->
 <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImportFile(event)">
 
 <script>
+// ========== 管理模式检测 ==========
+const urlParams = new URLSearchParams(window.location.search);
+const isAdmin = urlParams.get('p') === '0721';
+
 // ========== 数据模型 ==========
-const STORAGE_KEY = 'dust2_tactical_data_v2';
+const STORAGE_KEY = 'dust2_tactical_data_v3';
 let appData = loadData();
 let activeCategoryId = null;
 let searchQuery = '';
-let activeVideoCardId = null; // 当前正在播放的视频卡片 id
+let activeVideoCardId = null;
 
 function getDefaultData(){
   return {
@@ -732,42 +1019,43 @@ function getDefaultData(){
   };
 }
 
-function genId(){
-  return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
-}
+function genId(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
 
 function loadData(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
-      const d = JSON.parse(raw);
-      if(d.categories && d.items) return d;
-    }
-  }catch(e){}
-  // 兼容旧版本 key
-  try{
-    const oldRaw = localStorage.getItem('dust2_tactical_data');
-    if(oldRaw){
-      const d = JSON.parse(oldRaw);
-      if(d.categories && d.items) return d;
-    }
-  }catch(e){}
+  try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw){ const d=JSON.parse(raw); if(d.categories&&d.items) return d; } }catch(e){}
+  try{ const old=localStorage.getItem('dust2_tactical_data_v2'); if(old){ const d=JSON.parse(old); if(d.categories&&d.items) return d; } }catch(e){}
+  try{ const old2=localStorage.getItem('dust2_tactical_data'); if(old2){ const d=JSON.parse(old2); if(d.categories&&d.items) return d; } }catch(e){}
   return getDefaultData();
 }
 
-function saveData(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
+
+// ========== 管理模式 UI ==========
+function applyAdminMode(){
+  // 管理标记
+  document.getElementById('adminBadge').classList.toggle('visible', isAdmin);
+  document.getElementById('exitAdminBtn').classList.toggle('visible', isAdmin);
+  
+  // 所有带 admin-only 类的元素
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.classList.toggle('visible', isAdmin);
+  });
+  
+  // 更新分类栏以显示/隐藏编辑按钮
+  renderCategoryBar();
+  renderContent();
+}
+
+function exitAdmin(){
+  // 跳转到不带参数的 URL
+  const url = window.location.origin + window.location.pathname;
+  window.location.href = url;
 }
 
 // ========== 搜索 ==========
 function onSearch(value){
   searchQuery = value.trim().toLowerCase();
-  const clearBtn = document.getElementById('searchClear');
-  if(searchQuery){
-    clearBtn.classList.add('visible');
-  }else{
-    clearBtn.classList.remove('visible');
-  }
+  document.getElementById('searchClear').classList.toggle('visible', !!searchQuery);
   renderContent();
 }
 
@@ -779,15 +1067,12 @@ function clearSearch(){
 }
 
 function getFilteredItems(){
-  // 全局搜索：遍历所有分类
-  if(!searchQuery) return null; // null 表示不过滤
+  if(!searchQuery) return null;
   const results = [];
   for(const cat of appData.categories){
     const items = appData.items[cat.id] || [];
     for(const item of items){
-      if((item.text || '').toLowerCase().includes(searchQuery)){
-        results.push({ ...item, _catName: cat.name, _catId: cat.id });
-      }
+      if((item.text||'').toLowerCase().includes(searchQuery)) results.push({...item,_catName:cat.name,_catId:cat.id});
     }
   }
   return results;
@@ -795,74 +1080,45 @@ function getFilteredItems(){
 
 // ========== 视频懒加载 ==========
 function stopActiveVideo(){
-  if(activeVideoCardId){
-    const prevCard = document.querySelector(`.card[data-item-id="${activeVideoCardId}"]`);
-    if(prevCard){
-      const videoArea = prevCard.querySelector('.card-video-area');
-      if(videoArea){
-        const video = videoArea.querySelector('video');
-        if(video){
-          video.pause();
-          video.remove();
-        }
-        // 恢复占位
-        const placeholder = document.createElement('div');
-        placeholder.className = 'video-placeholder';
-        placeholder.innerHTML = '<span class="play-icon">▶</span>点击加载视频';
-        placeholder.onclick = function(e){ e.stopPropagation(); loadVideo(activeVideoCardId); };
-        videoArea.innerHTML = '';
-        videoArea.appendChild(placeholder);
-      }
+  if(!activeVideoCardId) return;
+  const prevCard = document.querySelector(`.card[data-item-id="${activeVideoCardId}"]`);
+  if(prevCard){
+    const va = prevCard.querySelector('.card-video-area');
+    if(va){
+      const v = va.querySelector('video');
+      if(v){ v.pause(); v.remove(); }
+      const ph = document.createElement('div');
+      ph.className = 'video-placeholder';
+      ph.innerHTML = '<span class="play-icon">▶</span>点击加载视频';
+      ph.onclick = function(e){ e.stopPropagation(); loadVideo(activeVideoCardId); };
+      va.innerHTML = '';
+      va.appendChild(ph);
     }
-    activeVideoCardId = null;
   }
+  activeVideoCardId = null;
 }
 
 function loadVideo(itemId){
-  // 先停止当前视频
-  if(activeVideoCardId === itemId) return; // 已经在播放
+  if(activeVideoCardId === itemId) return;
   stopActiveVideo();
-
-  // 找到 item 数据
   let item = null;
   for(const catId of Object.keys(appData.items)){
-    const found = appData.items[catId].find(i => i.id === itemId);
-    if(found){ item = found; break; }
+    const f = appData.items[catId].find(i=>i.id===itemId);
+    if(f){ item=f; break; }
   }
-  if(!item || !item.videoUrl || item.videoUrl.trim() === ''){
-    toast('未设置视频链接');
-    return;
-  }
-
+  if(!item||!item.videoUrl||item.videoUrl.trim()===''){ toast('未设置视频链接'); return; }
   const card = document.querySelector(`.card[data-item-id="${itemId}"]`);
   if(!card) return;
   const videoArea = card.querySelector('.card-video-area');
   if(!videoArea) return;
-
-  // 显示加载中
   videoArea.innerHTML = '<div class="video-loading">LOADING...</div>';
-
-  // 判断是否为 YouTube
   const ytMatch = item.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
   if(ytMatch){
-    // YouTube: 用缩略图 + 点击跳转
     const thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-    videoArea.innerHTML = `
-      <div style="position:relative;width:100%;height:100%;cursor:pointer;" 
-           onclick="window.open('https://www.youtube.com/watch?v=${ytMatch[1]}','_blank')"
-           title="在 YouTube 打开">
-        <img src="${thumbUrl}" style="width:100%;height:100%;object-fit:cover;" 
-             onerror="this.parentElement.innerHTML='<div class=video-placeholder><span class=play-icon>▶</span>缩略图加载失败</div>'">
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
-          <span style="font-size:40px;opacity:0.7;">▶</span>
-        </div>
-      </div>
-    `;
-    activeVideoCardId = null; // YouTube 不占用播放状态
+    videoArea.innerHTML = `<div style="position:relative;width:100%;height:100%;cursor:pointer;" onclick="window.open('https://www.youtube.com/watch?v=${ytMatch[1]}','_blank')" title="在 YouTube 打开"><img src="${thumbUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div class=video-placeholder><span class=play-icon>▶</span>缩略图加载失败</div>'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><span style="font-size:40px;opacity:0.7;">▶</span></div></div>`;
+    activeVideoCardId = null;
     return;
   }
-
-  // 直链 mp4
   const video = document.createElement('video');
   video.src = item.videoUrl;
   video.controls = true;
@@ -878,145 +1134,71 @@ function loadVideo(itemId){
     videoArea.innerHTML = '<div class="video-placeholder"><span class="play-icon">⚠</span>视频加载失败</div>';
     activeVideoCardId = null;
   };
-  // 先挂载
   videoArea.innerHTML = '';
   videoArea.appendChild(video);
   activeVideoCardId = itemId;
-
-  video.addEventListener('ended', function(){
-    activeVideoCardId = null;
-  });
+  video.addEventListener('ended',()=>{ activeVideoCardId = null; });
 }
 
 // ========== 渲染 ==========
-function renderAll(){
-  renderCategoryBar();
-  renderContent();
-}
+function renderAll(){ renderCategoryBar(); renderContent(); }
 
 function renderCategoryBar(){
   const bar = document.getElementById('categoryBar');
   let html = '';
   appData.categories.forEach(cat => {
     const isActive = cat.id === activeCategoryId && !searchQuery;
-    html += `
-      <div class="category-tab${isActive ? ' active' : ''}" data-cat-id="${cat.id}" onclick="switchCategory('${cat.id}')">
-        <span class="cat-name" data-cat-id="${cat.id}">${escapeHtml(cat.name)}</span>
-        <span class="cat-actions-inline">
-          <button class="cat-btn-mini" onclick="event.stopPropagation();renameCategory('${cat.id}')" title="重命名">✎</button>
-          <button class="cat-btn-mini danger" onclick="event.stopPropagation();deleteCategory('${cat.id}')" title="删除">×</button>
-        </span>
-      </div>
-    `;
+    html += `<div class="category-tab${isActive?' active':''}" data-cat-id="${cat.id}" onclick="switchCategory('${cat.id}')"><span class="cat-name">${escapeHtml(cat.name)}</span><span class="cat-actions-inline admin-only${isAdmin?' visible':''}"><button class="cat-btn-mini" onclick="event.stopPropagation();renameCategory('${cat.id}')" title="重命名">✎</button><button class="cat-btn-mini danger" onclick="event.stopPropagation();deleteCategory('${cat.id}')" title="删除">×</button></span></div>`;
   });
-  html += `<button class="category-add" onclick="addCategory()" title="添加分类">+</button>`;
+  html += `<button class="category-add admin-only${isAdmin?' visible':''}" onclick="addCategory()" title="添加分类">+</button>`;
   bar.innerHTML = html;
 }
 
 function renderContent(){
   stopActiveVideo();
   const area = document.getElementById('contentArea');
-
   if(searchQuery){
     const results = getFilteredItems();
     if(results.length === 0){
-      area.innerHTML = `
-        <div class="empty-state">
-          <span class="empty-icon">⌕</span>
-          <p>未找到匹配「${escapeHtml(searchQuery)}」的道具</p>
-        </div>
-      `;
+      area.innerHTML = `<div class="empty-state"><span class="empty-icon">⌕</span><p>未找到匹配「${escapeHtml(searchQuery)}」的道具</p></div>`;
     }else{
       let cardsHtml = '';
-      results.forEach(item => {
-        cardsHtml += renderCard(item, true);
-      });
-      area.innerHTML = `
-        <div class="search-result-info">搜索「<strong>${escapeHtml(searchQuery)}</strong>」· 找到 <strong>${results.length}</strong> 个结果</div>
-        <div class="cards-grid">${cardsHtml}</div>
-      `;
+      results.forEach(item => { cardsHtml += renderCard(item, true); });
+      area.innerHTML = `<div class="search-result-info">搜索「<strong>${escapeHtml(searchQuery)}</strong>」· 找到 <strong>${results.length}</strong> 个结果</div><div class="cards-grid">${cardsHtml}</div>`;
     }
     return;
   }
-
   if(!activeCategoryId){
-    if(appData.categories.length > 0){
-      activeCategoryId = appData.categories[0].id;
-      renderAll();
-      return;
-    }
-    area.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">☐</span>
-        <p>未创建分类 · 点击上方 [+] 添加</p>
-      </div>
-    `;
+    if(appData.categories.length > 0){ activeCategoryId = appData.categories[0].id; renderAll(); return; }
+    area.innerHTML = `<div class="empty-state"><span class="empty-icon">☐</span><p>未创建分类 · 点击上方 [+] 添加</p></div>`;
     return;
   }
   const items = appData.items[activeCategoryId] || [];
   if(items.length === 0){
-    area.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">▸</span>
-        <p>此分类下暂无道具 · 点击下方按钮添加</p>
-      </div>
-    `;
+    area.innerHTML = `<div class="empty-state"><span class="empty-icon">▸</span><p>此分类下暂无道具 · ${isAdmin?'点击下方按钮添加':'等待管理员添加'}</p></div>`;
   }else{
     let cardsHtml = '';
-    items.forEach(item => {
-      cardsHtml += renderCard(item, false);
-    });
+    items.forEach(item => { cardsHtml += renderCard(item, false); });
     area.innerHTML = `<div class="cards-grid">${cardsHtml}</div>`;
   }
-
-  const addBtn = document.createElement('button');
-  addBtn.className = 'btn-global';
-  addBtn.style.cssText = 'margin-top:16px;width:100%;text-align:center;';
-  addBtn.textContent = '+ 添加道具';
-  addBtn.onclick = () => addItem(activeCategoryId);
-  area.appendChild(addBtn);
+  if(isAdmin){
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn-global';
+    addBtn.style.cssText = 'margin-top:16px;width:100%;text-align:center;';
+    addBtn.textContent = '+ 添加道具';
+    addBtn.onclick = () => addItem(activeCategoryId);
+    area.appendChild(addBtn);
+  }
 }
 
 function renderCard(item, showCategory){
   const hasVideo = item.videoUrl && item.videoUrl.trim() !== '';
-  let videoInner = '';
-  if(hasVideo){
-    videoInner = `
-      <div class="video-placeholder" onclick="event.stopPropagation();loadVideo('${item.id}')">
-        <span class="play-icon">▶</span>
-        点击加载视频
-      </div>
-    `;
-  }else{
-    videoInner = `
-      <div class="video-placeholder" onclick="event.stopPropagation();editVideoUrl('${item.id}')">
-        <span class="play-icon">▶</span>
-        点击添加视频链接
-      </div>
-    `;
-  }
-
+  let videoInner = hasVideo
+    ? `<div class="video-placeholder" onclick="event.stopPropagation();loadVideo('${item.id}')"><span class="play-icon">▶</span>点击加载视频</div>`
+    : `<div class="video-placeholder" onclick="event.stopPropagation();${isAdmin?"editVideoUrl('${item.id}')":''}"><span class="play-icon">▶</span>${isAdmin?'点击添加视频链接':'暂无视频'}</div>`;
   const catBadge = showCategory ? `<span style="font-size:9px;color:var(--tactical-orange);opacity:0.7;margin-left:auto;flex-shrink:0;">${escapeHtml(item._catName||'')}</span>` : '';
-
-  return `
-    <div class="card" data-item-id="${item.id}">
-      <div class="card-text-area">
-        <input class="card-text-input" 
-               value="${escapeAttr(item.text || '')}" 
-               placeholder="道具名称..."
-               onchange="updateItemText('${item.id}', this.value)"
-               onclick="event.stopPropagation()">
-        ${catBadge}
-        <div class="card-btn-row">
-          <button class="card-btn" onclick="event.stopPropagation();editVideoUrl('${item.id}')" title="编辑视频">▶</button>
-          <button class="card-btn danger" onclick="event.stopPropagation();deleteItem('${item.id}')" title="删除">×</button>
-        </div>
-      </div>
-      <div class="card-video-area">
-        ${videoInner}
-      </div>
-    </div>
-  `;
+  const inputClass = isAdmin ? '' : ' readonly';
+  return `<div class="card" data-item-id="${item.id}"><div class="card-text-area"><input class="card-text-input${inputClass}" value="${escapeAttr(item.text||'')}" placeholder="道具名称..." onchange="${isAdmin?"updateItemText('${item.id}', this.value)":''}" onclick="event.stopPropagation()" ${isAdmin?'':'readonly'}>${catBadge}<div class="card-btn-row admin-only${isAdmin?' visible':''}"><button class="card-btn" onclick="event.stopPropagation();editVideoUrl('${item.id}')" title="编辑视频">▶</button><button class="card-btn danger" onclick="event.stopPropagation();deleteItem('${item.id}')" title="删除">×</button></div></div><div class="card-video-area">${videoInner}</div></div>`;
 }
 
 // ========== 分类操作 ==========
@@ -1029,185 +1211,145 @@ function switchCategory(catId){
 }
 
 function addCategory(){
+  if(!isAdmin) return;
   const name = prompt('输入分类名称：');
-  if(!name || name.trim() === '') return;
+  if(!name||!name.trim()) return;
   const newCat = { id: genId(), name: name.trim() };
   appData.categories.push(newCat);
   appData.items[newCat.id] = [];
   activeCategoryId = newCat.id;
-  saveData();
-  renderAll();
-  toast('分类已添加');
+  saveData(); renderAll(); toast('分类已添加');
 }
 
 function renameCategory(catId){
-  const cat = appData.categories.find(c => c.id === catId);
+  if(!isAdmin) return;
+  const cat = appData.categories.find(c=>c.id===catId);
   if(!cat) return;
   const newName = prompt('重命名分类：', cat.name);
-  if(newName && newName.trim() !== ''){
-    cat.name = newName.trim();
-    saveData();
-    renderAll();
-    toast('已重命名');
-  }
+  if(newName&&newName.trim()!==''){ cat.name = newName.trim(); saveData(); renderAll(); toast('已重命名'); }
 }
 
 function deleteCategory(catId){
-  const cat = appData.categories.find(c => c.id === catId);
+  if(!isAdmin) return;
+  const cat = appData.categories.find(c=>c.id===catId);
   if(!cat) return;
   if(!confirm(`确定删除分类「${cat.name}」及其所有道具？此操作不可恢复。`)) return;
-  appData.categories = appData.categories.filter(c => c.id !== catId);
+  appData.categories = appData.categories.filter(c=>c.id!==catId);
   delete appData.items[catId];
-  if(activeCategoryId === catId){
-    activeCategoryId = appData.categories.length > 0 ? appData.categories[0].id : null;
-  }
-  saveData();
-  renderAll();
-  toast('分类已删除');
+  if(activeCategoryId===catId) activeCategoryId = appData.categories.length > 0 ? appData.categories[0].id : null;
+  saveData(); renderAll(); toast('分类已删除');
 }
 
 // ========== 道具操作 ==========
 function addItem(catId){
+  if(!isAdmin) return;
   if(!appData.items[catId]) appData.items[catId] = [];
-  const newItem = { id: genId(), text: '', videoUrl: '' };
-  appData.items[catId].push(newItem);
-  saveData();
-  renderContent();
-  toast('道具已添加');
+  appData.items[catId].push({ id: genId(), text: '', videoUrl: '' });
+  saveData(); renderContent(); toast('道具已添加');
 }
 
 function deleteItem(itemId){
+  if(!isAdmin) return;
   for(const catId of Object.keys(appData.items)){
-    const idx = appData.items[catId].findIndex(i => i.id === itemId);
-    if(idx !== -1){
-      if(activeVideoCardId === itemId) stopActiveVideo();
+    const idx = appData.items[catId].findIndex(i=>i.id===itemId);
+    if(idx!==-1){
+      if(activeVideoCardId===itemId) stopActiveVideo();
       appData.items[catId].splice(idx, 1);
-      saveData();
-      renderContent();
-      toast('道具已删除');
+      saveData(); renderContent(); toast('道具已删除');
       return;
     }
   }
 }
 
 function updateItemText(itemId, newText){
+  if(!isAdmin) return;
   for(const catId of Object.keys(appData.items)){
-    const item = appData.items[catId].find(i => i.id === itemId);
-    if(item){
-      item.text = newText;
-      saveData();
-      return;
-    }
+    const item = appData.items[catId].find(i=>i.id===itemId);
+    if(item){ item.text = newText; saveData(); return; }
   }
 }
 
 function editVideoUrl(itemId){
+  if(!isAdmin) return;
   let currentUrl = '';
-  for(const catId of Object.keys(appData.items)){
-    const item = appData.items[catId].find(i => i.id === itemId);
-    if(item){ currentUrl = item.videoUrl || ''; break; }
-  }
+  for(const catId of Object.keys(appData.items)){ const item = appData.items[catId].find(i=>i.id===itemId); if(item){ currentUrl=item.videoUrl||''; break; } }
   const newUrl = prompt('输入视频直链（YouTube / mp4 / GitHub raw 链接）：', currentUrl);
-  if(newUrl === null) return;
-  if(activeVideoCardId === itemId) stopActiveVideo();
-  for(const catId of Object.keys(appData.items)){
-    const item = appData.items[catId].find(i => i.id === itemId);
-    if(item){
-      item.videoUrl = newUrl.trim();
-      saveData();
-      renderContent();
-      toast('视频链接已更新');
-      return;
-    }
-  }
+  if(newUrl===null) return;
+  if(activeVideoCardId===itemId) stopActiveVideo();
+  for(const catId of Object.keys(appData.items)){ const item = appData.items[catId].find(i=>i.id===itemId); if(item){ item.videoUrl = newUrl.trim(); saveData(); renderContent(); toast('视频链接已更新'); return; } }
 }
 
 // ========== 数据导入导出 ==========
 function exportData(){
-  const blob = new Blob([JSON.stringify(appData, null, 2)], {type:'application/json'});
+  if(!isAdmin) return;
+  const blob = new Blob([JSON.stringify(appData,null,2)],{type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'dust2-tactical-backup.json';
-  a.click();
+  a.href = url; a.download = 'dust2-tactical-backup.json'; a.click();
   URL.revokeObjectURL(url);
   toast('数据已导出');
 }
 
 function importDataPrompt(){
+  if(!isAdmin) return;
   document.getElementById('importFileInput').click();
 }
 
 function handleImportFile(event){
+  if(!isAdmin) return;
   const file = event.target.files[0];
   if(!file) return;
   const reader = new FileReader();
   reader.onload = function(e){
     try{
       const imported = JSON.parse(e.target.result);
-      if(imported.categories && imported.items){
+      if(imported.categories&&imported.items){
         if(confirm('导入将覆盖当前所有数据，确定继续？')){
           appData = imported;
-          activeCategoryId = appData.categories.length > 0 ? appData.categories[0].id : null;
+          activeCategoryId = appData.categories.length>0 ? appData.categories[0].id : null;
           activeVideoCardId = null;
           searchQuery = '';
           document.getElementById('searchInput').value = '';
           document.getElementById('searchClear').classList.remove('visible');
-          saveData();
-          renderAll();
-          toast('数据已导入');
+          saveData(); renderAll(); toast('数据已导入');
         }
-      }else{
-        alert('无效的数据格式');
-      }
-    }catch(err){
-      alert('JSON 解析失败');
-    }
+      }else{ alert('无效的数据格式'); }
+    }catch(err){ alert('JSON 解析失败'); }
   };
   reader.readAsText(file);
   event.target.value = '';
 }
 
 function resetAll(){
+  if(!isAdmin) return;
   if(confirm('⚠ 确定要重置所有数据？此操作不可恢复！')){
     appData = getDefaultData();
-    activeCategoryId = appData.categories.length > 0 ? appData.categories[0].id : null;
+    activeCategoryId = appData.categories.length>0 ? appData.categories[0].id : null;
     activeVideoCardId = null;
     searchQuery = '';
     document.getElementById('searchInput').value = '';
     document.getElementById('searchClear').classList.remove('visible');
-    saveData();
-    renderAll();
-    toast('已重置为默认数据');
+    saveData(); renderAll(); toast('已重置为默认数据');
   }
 }
 
 // ========== 工具函数 ==========
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function escapeAttr(str){
-  return str.replace(/"/g, '&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escapeHtml(str){ const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+function escapeAttr(str){ return str.replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function toast(msg){
   const existing = document.querySelector('.toast');
   if(existing) existing.remove();
   const el = document.createElement('div');
-  el.className = 'toast';
-  el.textContent = msg;
+  el.className = 'toast'; el.textContent = msg;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2200);
+  setTimeout(()=>el.remove(), 2200);
 }
 
 // ========== 初始化 ==========
-if(appData.categories.length > 0 && !activeCategoryId){
-  activeCategoryId = appData.categories[0].id;
-}
+if(appData.categories.length > 0 && !activeCategoryId) activeCategoryId = appData.categories[0].id;
 renderAll();
+applyAdminMode();
 </script>
 
 </body>
