@@ -59,6 +59,7 @@ body::after{
   z-index: 0;
 }
 
+/* ===== 背景战术层 ===== */
 .bg-tactical{
   position: fixed;
   inset: 0;
@@ -67,7 +68,6 @@ body::after{
   overflow: hidden;
 }
 
-/* ==================== 投掷物 ==================== */
 .grenade-smoke{
   position: absolute;
   left: 2%; top: 8%;
@@ -171,7 +171,6 @@ body::after{
   opacity: 0.7;
 }
 
-/* ==================== 地图轮廓 ==================== */
 .map-a-long{
   position: absolute;
   left: 10%; top: 22%;
@@ -276,7 +275,6 @@ body::after{
   opacity: 0.5;
 }
 
-/* ==================== 战术标记 ==================== */
 .tac-arrow-1{
   position: absolute;
   left: 8%; bottom: 14%;
@@ -395,7 +393,6 @@ body::after{
 .admin-badge:hover{ opacity: 1; }
 .admin-badge.visible{ display: inline; }
 
-/* ===== 退出管理按钮 ===== */
 .exit-admin-btn{
   display: none;
   position: fixed;
@@ -756,6 +753,7 @@ body::after{
 .card-btn:hover{ border-color: var(--tactical-orange); color: var(--tactical-orange); }
 .card-btn.danger:hover{ border-color: var(--danger-red); color: var(--danger-red); }
 
+/* ===== 视频区域 ===== */
 .card-video-area{
   flex: 1;
   position: relative;
@@ -774,7 +772,33 @@ body::after{
   object-fit: contain;
   background: #000;
 }
-.video-placeholder{
+
+.cover-canvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.cover-canvas:hover{ opacity: 0.85; }
+
+.video-loading{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--tactical-orange);
+  letter-spacing: 1px;
+  animation: pulse 1s ease-in-out infinite;
+  background: #0a0a06;
+}
+@keyframes pulse{ 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+.video-placeholder-add{
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-dim);
@@ -791,25 +815,17 @@ body::after{
   justify-content: center;
   border: 1px dashed transparent;
 }
-.video-placeholder:hover{ color: var(--tactical-orange); border-color: var(--border-subtle); }
-.video-placeholder .play-icon{
+.video-placeholder-add:hover{ color: var(--tactical-orange); border-color: var(--border-subtle); }
+.video-placeholder-add .play-icon{
   display: block;
   font-size: 40px;
   margin-bottom: 8px;
   opacity: 0.35;
   transition: opacity 0.2s, transform 0.2s;
 }
-.video-placeholder:hover .play-icon{ opacity: 0.7; transform: scale(1.1); }
+.video-placeholder-add:hover .play-icon{ opacity: 0.7; transform: scale(1.1); }
 
-.video-loading{
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--tactical-orange);
-  letter-spacing: 1px;
-  animation: pulse 1s ease-in-out infinite;
-}
-@keyframes pulse{ 0%,100%{opacity:0.4} 50%{opacity:1} }
-
+/* ===== Modal ===== */
 .modal-overlay{
   position: fixed;
   inset: 0;
@@ -923,6 +939,7 @@ body::after{
 </head>
 <body>
 
+<!-- ===== 背景 ===== -->
 <div class="bg-tactical" aria-hidden="true">
   <div class="grenade-smoke">
     <div class="g-line" style="top:86px;"></div><div class="g-line" style="top:112px;"></div>
@@ -958,7 +975,11 @@ body::after{
   <span class="tac-label t">T SPAWN</span>
 </div>
 
+<!-- ===== 退出管理 ===== -->
 <button class="exit-admin-btn" id="exitAdminBtn" onclick="exitAdmin()" title="退出管理模式">🔓 退出管理</button>
+
+<!-- 隐藏 Canvas 用于生成封面 -->
+<canvas id="hiddenCoverCanvas" width="400" height="400" style="display:none;"></canvas>
 
 <div class="app-container">
   <header class="header">
@@ -995,12 +1016,12 @@ body::after{
 <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImportFile(event)">
 
 <script>
-// ========== 管理模式检测 ==========
+// ========== 管理模式 ==========
 const urlParams = new URLSearchParams(window.location.search);
 const isAdmin = urlParams.get('p') === '0721';
 
 // ========== 数据模型 ==========
-const STORAGE_KEY = 'dust2_tactical_data_v3';
+const STORAGE_KEY = 'dust2_tactical_data_v4';
 let appData = loadData();
 let activeCategoryId = null;
 let searchQuery = '';
@@ -1023,31 +1044,142 @@ function genId(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().t
 
 function loadData(){
   try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw){ const d=JSON.parse(raw); if(d.categories&&d.items) return d; } }catch(e){}
-  try{ const old=localStorage.getItem('dust2_tactical_data_v2'); if(old){ const d=JSON.parse(old); if(d.categories&&d.items) return d; } }catch(e){}
-  try{ const old2=localStorage.getItem('dust2_tactical_data'); if(old2){ const d=JSON.parse(old2); if(d.categories&&d.items) return d; } }catch(e){}
+  try{ const old=localStorage.getItem('dust2_tactical_data_v3'); if(old){ const d=JSON.parse(old); if(d.categories&&d.items) return d; } }catch(e){}
+  try{ const old2=localStorage.getItem('dust2_tactical_data_v2'); if(old2){ const d=JSON.parse(old2); if(d.categories&&d.items) return d; } }catch(e){}
+  try{ const old3=localStorage.getItem('dust2_tactical_data'); if(old3){ const d=JSON.parse(old3); if(d.categories&&d.items) return d; } }catch(e){}
   return getDefaultData();
 }
 
 function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
 
+// ========== Canvas 封面生成 ==========
+function generateCoverCanvas(text){
+  const canvas = document.getElementById('hiddenCoverCanvas');
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+
+  ctx.fillStyle = '#14140e';
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.strokeStyle = 'rgba(196,176,140,0.08)';
+  ctx.lineWidth = 0.5;
+  const gridSize = 20;
+  for(let x = gridSize; x < size; x += gridSize){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, size); ctx.stroke();
+  }
+  for(let y = gridSize; y < size; y += gridSize){
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size, y); ctx.stroke();
+  }
+
+  ctx.strokeStyle = 'rgba(196,176,140,0.2)';
+  ctx.lineWidth = 1;
+  const m = 14;
+  const l = 22;
+  [
+    [m,m,'tr'], [size-m,m,'tl'],
+    [m,size-m,'br'], [size-m,size-m,'bl']
+  ].forEach(([cx,cy,dir]) => {
+    let dx1=0,dy1=0,dx2=0,dy2=0;
+    if(dir==='tr'){ dx1=l;dy1=0;dx2=0;dy2=l; }
+    if(dir==='tl'){ dx1=-l;dy1=0;dx2=0;dy2=l; }
+    if(dir==='br'){ dx1=l;dy1=0;dx2=0;dy2=-l; }
+    if(dir==='bl'){ dx1=-l;dy1=0;dx2=0;dy2=-l; }
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(cx+dx1, cy+dy1);
+    ctx.moveTo(cx, cy); ctx.lineTo(cx+dx2, cy+dy2);
+    ctx.stroke();
+  });
+
+  ctx.strokeStyle = 'rgba(240,160,80,0.15)';
+  ctx.lineWidth = 0.8;
+  const ch = size/2;
+  ctx.beginPath();
+  ctx.moveTo(ch-28, ch); ctx.lineTo(ch+28, ch);
+  ctx.moveTo(ch, ch-28); ctx.lineTo(ch, ch+28);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(ch, ch, 6, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(240,160,80,0.2)';
+  ctx.stroke();
+
+  const displayText = (text && text.trim()) ? text.trim().toUpperCase() : '';
+  
+  if(displayText){
+    const hasCJK = /[\u4e00-\u9fff]/.test(displayText);
+    
+    let fontSize;
+    if(displayText.length <= 4) fontSize = 64;
+    else if(displayText.length <= 8) fontSize = 44;
+    else if(displayText.length <= 14) fontSize = 30;
+    else fontSize = 22;
+
+    ctx.font = `900 ${fontSize}px ${hasCJK ? '"Noto Sans SC", "Microsoft YaHei", sans-serif' : '"Bebas Neue", "Impact", sans-serif'}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const maxWidth = size - 60;
+    let lines = [displayText];
+    if(ctx.measureText(displayText).width > maxWidth && displayText.length > 8){
+      const mid = Math.ceil(displayText.length / 2);
+      let splitIdx = mid;
+      for(let i = mid; i < displayText.length; i++){
+        if(displayText[i] === ' '){ splitIdx = i; break; }
+      }
+      if(splitIdx === mid){
+        for(let i = mid; i >= 0; i--){
+          if(displayText[i] === ' '){ splitIdx = i; break; }
+        }
+      }
+      lines = [displayText.slice(0, splitIdx).trim(), displayText.slice(splitIdx).trim()];
+      if(ctx.measureText(lines[0]).width > maxWidth || ctx.measureText(lines[1]).width > maxWidth){
+        fontSize = Math.max(18, fontSize - 8);
+        ctx.font = `900 ${fontSize}px ${hasCJK ? '"Noto Sans SC", "Microsoft YaHei", sans-serif' : '"Bebas Neue", "Impact", sans-serif'}`;
+      }
+    }
+
+    const lineH = fontSize * 1.25;
+    const totalH = lineH * lines.length;
+    const startY = ch - totalH/2 + lineH/2;
+
+    ctx.strokeStyle = 'rgba(196,176,140,0.45)';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    lines.forEach((line, i) => {
+      ctx.strokeText(line, ch, startY + i * lineH);
+    });
+
+    ctx.fillStyle = '#f0a050';
+    lines.forEach((line, i) => {
+      ctx.fillText(line, ch, startY + i * lineH);
+    });
+  }
+
+  ctx.strokeStyle = 'rgba(240,160,80,0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(m+10, size-m-10);
+  ctx.lineTo(size-m-10, size-m-10);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(240,160,80,0.25)';
+  ctx.beginPath();
+  ctx.arc(size-m-10, size-m-10, 2.5, 0, Math.PI*2);
+  ctx.fill();
+
+  return canvas.toDataURL('image/jpeg', 0.92);
+}
+
 // ========== 管理模式 UI ==========
 function applyAdminMode(){
-  // 管理标记
   document.getElementById('adminBadge').classList.toggle('visible', isAdmin);
   document.getElementById('exitAdminBtn').classList.toggle('visible', isAdmin);
-  
-  // 所有带 admin-only 类的元素
   document.querySelectorAll('.admin-only').forEach(el => {
     el.classList.toggle('visible', isAdmin);
   });
-  
-  // 更新分类栏以显示/隐藏编辑按钮
   renderCategoryBar();
   renderContent();
 }
 
 function exitAdmin(){
-  // 跳转到不带参数的 URL
   const url = window.location.origin + window.location.pathname;
   window.location.href = url;
 }
@@ -1078,7 +1210,7 @@ function getFilteredItems(){
   return results;
 }
 
-// ========== 视频懒加载 ==========
+// ========== 视频 ==========
 function stopActiveVideo(){
   if(!activeVideoCardId) return;
   const prevCard = document.querySelector(`.card[data-item-id="${activeVideoCardId}"]`);
@@ -1087,15 +1219,27 @@ function stopActiveVideo(){
     if(va){
       const v = va.querySelector('video');
       if(v){ v.pause(); v.remove(); }
-      const ph = document.createElement('div');
-      ph.className = 'video-placeholder';
-      ph.innerHTML = '<span class="play-icon">▶</span>点击加载视频';
-      ph.onclick = function(e){ e.stopPropagation(); loadVideo(activeVideoCardId); };
-      va.innerHTML = '';
-      va.appendChild(ph);
+      restoreCover(activeVideoCardId, va);
     }
   }
   activeVideoCardId = null;
+}
+
+function restoreCover(itemId, videoArea){
+  const canvasImg = document.createElement('img');
+  canvasImg.src = generateCoverCanvas(findItemText(itemId));
+  canvasImg.className = 'cover-canvas';
+  canvasImg.onclick = function(e){ e.stopPropagation(); loadVideo(itemId); };
+  videoArea.innerHTML = '';
+  videoArea.appendChild(canvasImg);
+}
+
+function findItemText(itemId){
+  for(const catId of Object.keys(appData.items)){
+    const item = appData.items[catId].find(i=>i.id===itemId);
+    if(item) return item.text || '';
+  }
+  return '';
 }
 
 function loadVideo(itemId){
@@ -1115,7 +1259,7 @@ function loadVideo(itemId){
   const ytMatch = item.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
   if(ytMatch){
     const thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-    videoArea.innerHTML = `<div style="position:relative;width:100%;height:100%;cursor:pointer;" onclick="window.open('https://www.youtube.com/watch?v=${ytMatch[1]}','_blank')" title="在 YouTube 打开"><img src="${thumbUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div class=video-placeholder><span class=play-icon>▶</span>缩略图加载失败</div>'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);"><span style="font-size:40px;opacity:0.7;">▶</span></div></div>`;
+    videoArea.innerHTML = `<div style="position:relative;width:100%;height:100%;cursor:pointer;" onclick="window.open('https://www.youtube.com/watch?v=${ytMatch[1]}','_blank')" title="在 YouTube 打开"><img src="${thumbUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div class=video-placeholder-add><span class=play-icon>⚠</span>缩略图加载失败</div>'"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);"><span style="font-size:40px;opacity:0.7;">▶</span></div></div>`;
     activeVideoCardId = null;
     return;
   }
@@ -1131,13 +1275,17 @@ function loadVideo(itemId){
     activeVideoCardId = itemId;
   };
   video.onerror = function(){
-    videoArea.innerHTML = '<div class="video-placeholder"><span class="play-icon">⚠</span>视频加载失败</div>';
+    restoreCover(itemId, videoArea);
+    toast('视频加载失败');
     activeVideoCardId = null;
   };
+  video.addEventListener('ended',()=>{
+    restoreCover(itemId, videoArea);
+    activeVideoCardId = null;
+  });
   videoArea.innerHTML = '';
   videoArea.appendChild(video);
   activeVideoCardId = itemId;
-  video.addEventListener('ended',()=>{ activeVideoCardId = null; });
 }
 
 // ========== 渲染 ==========
@@ -1192,13 +1340,29 @@ function renderContent(){
 }
 
 function renderCard(item, showCategory){
+  const itemText = item.text || '';
   const hasVideo = item.videoUrl && item.videoUrl.trim() !== '';
-  let videoInner = hasVideo
-    ? `<div class="video-placeholder" onclick="event.stopPropagation();loadVideo('${item.id}')"><span class="play-icon">▶</span>点击加载视频</div>`
-    : `<div class="video-placeholder" onclick="event.stopPropagation();${isAdmin?"editVideoUrl('${item.id}')":''}"><span class="play-icon">▶</span>${isAdmin?'点击添加视频链接':'暂无视频'}</div>`;
+  
+  let videoInner = '';
+  if(hasVideo){
+    const coverSrc = generateCoverCanvas(itemText);
+    videoInner = `<img src="${coverSrc}" class="cover-canvas" onclick="event.stopPropagation();loadVideo('${item.id}')" alt="封面">`;
+  }else{
+    videoInner = `<div class="video-placeholder-add" onclick="event.stopPropagation();${isAdmin?"editVideoUrl('${item.id}')":''}"><span class="play-icon">▶</span>${isAdmin?'点击添加视频链接':'暂无视频'}</div>`;
+  }
+
   const catBadge = showCategory ? `<span style="font-size:9px;color:var(--tactical-orange);opacity:0.7;margin-left:auto;flex-shrink:0;">${escapeHtml(item._catName||'')}</span>` : '';
   const inputClass = isAdmin ? '' : ' readonly';
-  return `<div class="card" data-item-id="${item.id}"><div class="card-text-area"><input class="card-text-input${inputClass}" value="${escapeAttr(item.text||'')}" placeholder="道具名称..." onchange="${isAdmin?"updateItemText('${item.id}', this.value)":''}" onclick="event.stopPropagation()" ${isAdmin?'':'readonly'}>${catBadge}<div class="card-btn-row admin-only${isAdmin?' visible':''}"><button class="card-btn" onclick="event.stopPropagation();editVideoUrl('${item.id}')" title="编辑视频">▶</button><button class="card-btn danger" onclick="event.stopPropagation();deleteItem('${item.id}')" title="删除">×</button></div></div><div class="card-video-area">${videoInner}</div></div>`;
+  return `<div class="card" data-item-id="${item.id}"><div class="card-text-area"><input class="card-text-input${inputClass}" value="${escapeAttr(itemText)}" placeholder="道具名称..." onchange="${isAdmin?"updateItemText('${item.id}', this.value);refreshCover('${item.id}')":''}" onclick="event.stopPropagation()" ${isAdmin?'':'readonly'}>${catBadge}<div class="card-btn-row admin-only${isAdmin?' visible':''}"><button class="card-btn" onclick="event.stopPropagation();editVideoUrl('${item.id}')" title="编辑视频">▶</button><button class="card-btn danger" onclick="event.stopPropagation();deleteItem('${item.id}')" title="删除">×</button></div></div><div class="card-video-area">${videoInner}</div></div>`;
+}
+
+function refreshCover(itemId){
+  const card = document.querySelector(`.card[data-item-id="${itemId}"]`);
+  if(!card) return;
+  const coverImg = card.querySelector('.cover-canvas');
+  if(coverImg){
+    coverImg.src = generateCoverCanvas(findItemText(itemId));
+  }
 }
 
 // ========== 分类操作 ==========
