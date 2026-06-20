@@ -426,9 +426,9 @@ function generateCoverCanvas(coverText){
  if(displayText){
  const hasCJK = /[\u4e00-\u9fff]/.test(displayText);
  let fontSize;
- if(displayText.length <= 4) fontSize = 86;
- else if(displayText.length <= 8) fontSize = 64;
- else if(displayText.length <= 14) fontSize = 46;
+ if(displayText.length <= 4) fontSize = 90;
+ else if(displayText.length <= 8) fontSize = 68;
+ else if(displayText.length <= 14) fontSize = 48;
  else fontSize = 36;
 
  ctx.font = '900 ' + fontSize + 'px ' + (hasCJK ? '"Noto Sans SC", "Microsoft YaHei", sans-serif' : '"Saira Condensed", sans-serif');
