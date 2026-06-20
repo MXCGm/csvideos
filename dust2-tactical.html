@@ -348,7 +348,7 @@ function loadData(){
 
 function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
 
-// ========== Canvas 封面生成（Saira Condensed + 随机大X号） ==========
+// ========== Canvas 封面生成 ==========
 function generateCoverCanvas(coverText){
  const canvas = document.getElementById('hiddenCoverCanvas');
  const ctx = canvas.getContext('2d');
@@ -395,6 +395,7 @@ function generateCoverCanvas(coverText){
  ctx.fillStyle = 'rgba(240,160,80,0.3)';
  ctx.beginPath(); ctx.arc(size-m-10,size-m-10,2.5,0,Math.PI*2); ctx.fill();
 
+ // 随机 X 号
  const xMarks = [];
  const seed = coverText ? coverText.length * 7 + coverText.charCodeAt(0) : 42;
  let rng = seed;
@@ -420,14 +421,15 @@ function generateCoverCanvas(coverText){
  ctx.fillText('×', mark.x, mark.y);
  });
 
+ // 封面文字（独立编辑）
  const displayText = (coverText && coverText.trim()) ? coverText.trim().toUpperCase() : '';
  if(displayText){
  const hasCJK = /[\u4e00-\u9fff]/.test(displayText);
  let fontSize;
- if(displayText.length <= 4) fontSize = 64;
- else if(displayText.length <= 8) fontSize = 44;
- else if(displayText.length <= 14) fontSize = 30;
- else fontSize = 22;
+ if(displayText.length <= 4) fontSize = 86;
+ else if(displayText.length <= 8) fontSize = 64;
+ else if(displayText.length <= 14) fontSize = 46;
+ else fontSize = 36;
 
  ctx.font = '900 ' + fontSize + 'px ' + (hasCJK ? '"Noto Sans SC", "Microsoft YaHei", sans-serif' : '"Saira Condensed", sans-serif');
  ctx.textAlign = 'center';
@@ -442,7 +444,7 @@ function generateCoverCanvas(coverText){
  if(splitIdx===mid){ for(let i=mid;i>=0;i--){ if(displayText[i]===' '){ splitIdx=i; break; } } }
  lines = [displayText.slice(0,splitIdx).trim(), displayText.slice(splitIdx).trim()];
  if(ctx.measureText(lines[0]).width > maxWidth || ctx.measureText(lines[1]).width > maxWidth){
- fontSize = Math.max(18, fontSize - 8);
+ fontSize = Math.max(24, fontSize - 12);
  ctx.font = '900 ' + fontSize + 'px ' + (hasCJK ? '"Noto Sans SC", "Microsoft YaHei", sans-serif' : '"Saira Condensed", sans-serif');
  }
  }
