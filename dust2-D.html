@@ -250,8 +250,13 @@ function downloadHTML(){
         saveData();
         
         // 1. 获取当前页面的样式和结构
-        var style = document.querySelector('style').innerHTML;
-        var htmlContent = document.documentElement.outerHTML;
+        var styles = document.querySelectorAll('style');
+	var styleContent = '';
+	for (var i = 0; i < styles.length; i++) {
+    		styleContent += styles[i].innerHTML;
+}
+	// 构建独立 HTML 时，把 style 替换为 styleContent
+	var htmlContent = document.documentElement.outerHTML;
         
         // 2. 提取页面 body 内的“静态”结构（不含动态生成的卡片）
         // 我们只要骨架，不要动态内容（因为动态内容会在加载时由 JS 重新生成）
